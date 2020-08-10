@@ -1,0 +1,121 @@
+var tank = createSprite(60,300,30,20);
+tank.setAnimation("tankR2");
+tank.scale = 0.05;
+
+var aim = createSprite(0,0,20,20);
+aim.setAnimation("aim");
+aim.lifetime = -1;
+
+var plane = createSprite(150,100,30,20);
+plane.livingtime = 1;
+plane.setAnimation("planeR");
+plane.scale = 0.1;
+plane.velocityX = 2;
+
+
+function draw() {
+  noStroke();
+  fill(rgb(0, 255, 0));
+  rect(0,250,400,150);
+  fill(rgb(99, 219, 249));
+  rect(0,0,400,250);
+  fill(rgb(1, 52, 32, 1));
+  aim.x = World.mouseX;
+  aim.y = World.mouseY;
+  rect(tank.x,tank.y-3,50,3);
+  tank.scale = 0.36;
+  
+  if(keyDown("w") && tank.y > 240){
+    tank.y = tank.y-2.5;
+  }
+  if(keyDown("s") && tank.y < 380){
+    tank.y = tank.y+2.5;
+  }
+  if(keyDown("d") && tank.x < 350){
+    tank.x = tank.x+10;
+    tank.setAnimation("tankR2");
+    tank.side = "r";
+  }
+  if(keyDown("a") && tank.x > 50){
+    tank.x = tank.x-10;
+    tank.setAnimation("tankL2");
+    tank.side = "l";
+  }
+  if(keyWentDown("space")){
+    bomb();
+    destroyPellets();
+  }
+  if (tank.side === "r") {
+  rect(tank.x,tank.y-3,50,3);
+  }
+  if (tank.side === "l") {
+  rect(tank.x,tank.y-3,-60,3);
+  }
+  craftTouching(plane);
+  
+  //console.log(tank.x);
+  
+  
+  drawSprites();
+}
+
+function bomb(){
+  var SpBomb = createSprite(tank.x,tank.y,3,3);
+  SpBomb.shapeColor = "black";
+  var dX;
+  dX = -(tank.x-World.mouseX);
+  var dY;
+  dY = -(tank.y-World.mouseY);
+ 
+  SpBomb.velocityX = dX/7;
+  SpBomb.velocityY = dY/7;
+  
+  SpBomb.lifetime = 50;
+  //console.log(SpBomb.velocityX);
+  drawSprites();
+}
+
+function craftTouching(theCraft){
+  var list2 = World.allSprites;
+  
+  for(var k = 0;k < list2.length;k++){
+   if(theCraft.isTouching(list2[k])&&list2[k] !== theCraft&&list2[k] !== tank&&list2[k] !== aim){
+     theCraft.livingtime = theCraft.livingtime-1;
+     //console.log("k = "+k);
+   }
+}
+console.log("life = "+theCraft.livingtime);
+  if(theCraft.livingtime < 1){
+    theCraft.setAnimation("fire");
+    theCraft.velocityY = 5;
+    theCraft.captureSeconds = World.seconds;
+  }
+  if(theCraft.captureSeconds === World.seconds + 1){
+    console.log("dead");
+    theCraft.destroy();
+  }
+}
+
+function destroyPellets(){
+  var list = World.allSprites,j;
+  for(var i = 0;i < list.length;i++){
+   if(list[i].x > 400|| list[i].x <0||list[i].y > 400|| list[i].y <0){
+     list[i].destroy();                                                                               
+     //console.log(i);          
+   }
+   if(list[i].y > tank.y && list[i] != tank){
+     list[i].destroy();
+     j++;
+   }
+}
+}
+
+function touch(){}
+
+
+
+
+
+
+
+
